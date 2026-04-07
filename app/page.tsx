@@ -51,20 +51,20 @@ function HeroStats() {
       className="mx-auto mt-14 grid max-w-3xl grid-cols-1 gap-4 rounded-2xl border border-orange-100/90 bg-white/85 px-6 py-5 shadow-sm backdrop-blur-sm sm:grid-cols-3"
     >
       <div className="text-center sm:border-r sm:border-orange-100">
-        <p className="text-3xl font-extrabold tabular-nums text-[#1a3a6b]">
+        <p className="text-3xl font-extrabold tabular-nums text-[#071f3d]">
           +{nps}
           <span className="text-base font-bold text-emerald-600"> pts</span>
         </p>
         <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">NPS lift</p>
       </div>
       <div className="text-center sm:border-r sm:border-orange-100">
-        <p className="text-3xl font-extrabold tabular-nums text-[#1a3a6b]">
+        <p className="text-3xl font-extrabold tabular-nums text-[#071f3d]">
           {insights.toLocaleString()}
         </p>
         <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Insights / week</p>
       </div>
       <div className="text-center">
-        <p className="text-3xl font-extrabold tabular-nums text-[#1a3a6b]">
+        <p className="text-3xl font-extrabold tabular-nums text-[#071f3d]">
           {guestScore.toFixed(1)}
           <span className="ml-0.5 text-amber-500">★</span>
         </p>
@@ -82,7 +82,15 @@ export default function Home() {
   const introControls = useAnimation();
 
   const [stars, setStars] = useState<
-    { top: number; left: number; size: number; duration: number; delay: number; opacity: number }[]
+    {
+      top: number;
+      left: number;
+      size: number;
+      duration: number;
+      delay: number;
+      opacity: number;
+      tone: 0 | 1 | 2;
+    }[]
   >([]);
   const [embers, setEmbers] = useState<
     { top: number; left: number; size: number; duration: number; delay: number }[]
@@ -103,11 +111,11 @@ export default function Home() {
 
   const growthNodes = useMemo(
     () => [
-      { x: 130, y: 310 },
-      { x: 218, y: 270 },
-      { x: 304, y: 232 },
-      { x: 392, y: 192 },
-      { x: 492, y: 142 },
+      { x: 128, y: 318 },
+      { x: 212, y: 272 },
+      { x: 298, y: 238 },
+      { x: 388, y: 200 },
+      { x: 498, y: 148 },
     ],
     []
   );
@@ -150,6 +158,7 @@ export default function Home() {
       duration: Math.random() * 5 + 2,
       delay: Math.random() * 6,
       opacity: Math.random() * 0.6 + 0.2,
+      tone: Math.floor(Math.random() * 3) as 0 | 1 | 2,
     }));
     setStars(generatedStars);
 
@@ -206,7 +215,7 @@ export default function Home() {
   }, [showIntro, handleIntroExit]);
 
   return (
-    <main className="min-h-screen bg-[#fffbf5] text-[#1a3a6b]">
+    <main className="min-h-screen bg-[#fffbf5] text-[#071f3d]">
       <AnimatePresence>
         {showIntro ? (
           <motion.section
@@ -217,14 +226,16 @@ export default function Home() {
             exit={{ opacity: 0 }}
             onClick={handleIntroExit}
           >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(249,115,22,0.35),transparent_48%)] animate-pulse" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_22%,rgba(251,146,60,0.22),transparent_36%),radial-gradient(circle_at_72%_64%,rgba(234,88,12,0.18),transparent_44%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(249,115,22,0.32),transparent_48%),radial-gradient(circle_at_12%_35%,rgba(7,31,61,0.12),transparent_42%)] animate-pulse" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_22%,rgba(16,185,129,0.14),transparent_38%),radial-gradient(circle_at_72%_58%,rgba(249,115,22,0.2),transparent_44%)]" />
 
             <div className="absolute inset-0">
               {stars.map((star, idx) => (
                 <span
                   key={`star-${idx}`}
-                  className="intro-star absolute rounded-full bg-orange-200"
+                  className={`intro-star absolute rounded-full ${
+                    star.tone === 0 ? "bg-amber-200" : star.tone === 1 ? "bg-emerald-300" : "bg-sky-200"
+                  }`}
                   style={{
                     top: `${star.top}%`,
                     left: `${star.left}%`,
@@ -248,26 +259,52 @@ export default function Home() {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <defs>
-                    <linearGradient id="warmSky" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#fffbf5" />
-                      <stop offset="100%" stopColor="#fff7ed" />
+                    {/* Sky: cool top-left (navy frame) → warm horizon — matches logo card */}
+                    <linearGradient id="warmSky" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#f0f6ff" />
+                      <stop offset="40%" stopColor="#fffbf5" />
+                      <stop offset="100%" stopColor="#fff0e0" />
                     </linearGradient>
-                    <linearGradient id="mountBackWarm" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#fdba74" />
-                      <stop offset="100%" stopColor="#fb923c" />
+                    {/* Distant range — blue haze (logo border cool side) */}
+                    <linearGradient id="mountBackAtmos" x1="0%" y1="20%" x2="95%" y2="90%">
+                      <stop offset="0%" stopColor="#64748b" />
+                      <stop offset="40%" stopColor="#94a3b8" />
+                      <stop offset="100%" stopColor="#cbd5e1" />
                     </linearGradient>
-                    <linearGradient id="mountMidWarm" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#fb923c" />
-                      <stop offset="100%" stopColor="#f97316" />
-                    </linearGradient>
-                    <linearGradient id="mountFrontWarm" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#f97316" />
+                    {/* Mid — navy into green (logo “A” cross-tint) */}
+                    <linearGradient id="mountMidRock" x1="0%" y1="85%" x2="100%" y2="5%">
+                      <stop offset="0%" stopColor="#0c2d4a" />
+                      <stop offset="38%" stopColor="#0f5132" />
+                      <stop offset="62%" stopColor="#15803d" />
+                      <stop offset="88%" stopColor="#c2410c" />
                       <stop offset="100%" stopColor="#ea580c" />
                     </linearGradient>
+                    {/* Front — same story as mark: deep navy → emerald → orange/gold peak */}
+                    <linearGradient id="mountFrontRock" x1="5%" y1="95%" x2="92%" y2="8%">
+                      <stop offset="0%" stopColor="#071f3d" />
+                      <stop offset="26%" stopColor="#065f46" />
+                      <stop offset="48%" stopColor="#16a34a" />
+                      <stop offset="72%" stopColor="#ea580c" />
+                      <stop offset="92%" stopColor="#fb923c" />
+                      <stop offset="100%" stopColor="#fbbf24" />
+                    </linearGradient>
+                    <linearGradient id="snowCap" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="50%" stopColor="#fffbeb" />
+                      <stop offset="100%" stopColor="#fde68a" />
+                    </linearGradient>
                     <radialGradient id="sunWarm" cx="0.5" cy="0.5" r="0.5">
-                      <stop offset="0%" stopColor="rgba(255,215,120,0.95)" />
-                      <stop offset="55%" stopColor="rgba(251,146,60,0.45)" />
+                      <stop offset="0%" stopColor="#fff7c2" />
+                      <stop offset="35%" stopColor="#fcd34d" />
+                      <stop offset="65%" stopColor="rgba(249,115,22,0.55)" />
                       <stop offset="100%" stopColor="rgba(249,115,22,0)" />
+                    </radialGradient>
+                    {/* Peak orb — matches logo sun at tip of “A” */}
+                    <radialGradient id="peakOrb" cx="0.42" cy="0.38" r="0.58">
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="40%" stopColor="#fde047" />
+                      <stop offset="78%" stopColor="#f97316" />
+                      <stop offset="100%" stopColor="#ea580c" />
                     </radialGradient>
                     <filter id="growthGlow">
                       <feGaussianBlur stdDeviation="3.5" result="blurred" />
@@ -302,31 +339,55 @@ export default function Home() {
                     <div className="h-full w-full rounded-full intro-conic-rays-warm" />
                   </motion.foreignObject>
 
+                  {/* Distant silhouette — soft rolling peaks (atmospheric perspective) */}
                   <motion.path
-                    d="M0 430 L130 334 L228 356 L312 286 L426 320 L522 258 L625 302 L700 430 Z"
-                    fill="url(#mountBackWarm)"
+                    d="M0 430 C 90 408, 180 378, 268 358 C 356 338, 420 322, 492 312 C 558 304, 630 308, 700 322 L 700 430 Z"
+                    fill="url(#mountBackAtmos)"
                     initial={{ y: 90, opacity: 0 }}
-                    animate={{ y: 0, opacity: 0.75 }}
+                    animate={{ y: 0, opacity: 0.78 }}
                     transition={{ duration: 1.3, delay: 1.0, ease: [0.2, 0.9, 0.2, 1] }}
                   />
+                  {/* Mid range — carved ridges, warmer rock */}
                   <motion.path
-                    d="M0 430 L92 362 L184 296 L278 324 L374 212 L470 292 L566 180 L654 252 L700 430 Z"
-                    fill="url(#mountMidWarm)"
+                    d="M0 430 C 55 415, 120 382, 185 350 C 250 318, 315 295, 380 285 C 445 272, 515 258, 575 262 C 630 266, 675 285, 700 305 L 700 430 Z"
+                    fill="url(#mountMidRock)"
                     initial={{ y: 110, opacity: 0 }}
-                    animate={{ y: 0, opacity: 0.88 }}
+                    animate={{ y: 0, opacity: 0.9 }}
                     transition={{ duration: 1.2, delay: 1.35, ease: [0.2, 0.9, 0.2, 1] }}
                   />
+                  {/* Front range — main ridgeline + sunlit right faces */}
                   <motion.path
-                    d="M0 430 L84 368 L172 302 L262 336 L356 194 L446 296 L546 168 L648 248 L700 430 Z"
-                    fill="url(#mountFrontWarm)"
+                    d="M0 430 L 0 404 C 42 392, 78 360, 108 336 C 118 328, 125 322, 128 318 C 168 298, 188 288, 212 272 C 248 252, 272 242, 298 238 C 332 218, 358 208, 388 200 C 418 180, 458 162, 498 148 C 528 132, 558 148, 588 178 C 628 218, 662 252, 700 282 L 700 430 Z"
+                    fill="url(#mountFrontRock)"
                     initial={{ y: 128, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 1.1, delay: 1.65, ease: [0.2, 0.9, 0.2, 1] }}
                   />
+                  {/* Snow on high points */}
+                  <path
+                    d="M 196 278 L 212 258 L 228 278 C 220 272, 204 272, 196 278 Z"
+                    fill="url(#snowCap)"
+                    opacity={0.92}
+                  />
+                  <path
+                    d="M 282 246 L 298 224 L 314 246 C 306 238, 290 238, 282 246 Z"
+                    fill="url(#snowCap)"
+                    opacity={0.9}
+                  />
+                  <path
+                    d="M 368 210 L 388 186 L 408 210 C 398 202, 378 202, 368 210 Z"
+                    fill="url(#snowCap)"
+                    opacity={0.88}
+                  />
+                  <path
+                    d="M 472 158 L 498 128 L 524 158 C 510 148, 486 148, 472 158 Z"
+                    fill="url(#snowCap)"
+                    opacity={0.95}
+                  />
 
                   <motion.path
-                    d="M130 310 L218 270 L304 232 L392 192 L492 142"
-                    stroke="#22c55e"
+                    d="M128 318 C 168 298, 188 288, 212 272 C 248 252, 272 242, 298 238 C 332 218, 358 208, 388 200 C 418 180, 458 162, 498 148"
+                    stroke="#16a34a"
                     strokeWidth="5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -337,7 +398,7 @@ export default function Home() {
                     transition={{ duration: 1.35, delay: 2.5, ease: "easeOut" }}
                   />
                   <motion.path
-                    d="M130 310 L218 270 L304 232 L392 192 L492 142"
+                    d="M128 318 C 168 298, 188 288, 212 272 C 248 252, 272 242, 298 238 C 332 218, 358 208, 388 200 C 418 180, 458 162, 498 148"
                     stroke="rgba(249,115,22,0.45)"
                     strokeWidth="10"
                     strokeLinecap="round"
@@ -355,7 +416,14 @@ export default function Home() {
                       animate={{ scale: [0, 1.2, 1], opacity: 1 }}
                       transition={{ duration: 0.4, delay: 2.8 + idx * 0.18 }}
                     >
-                      <circle cx={node.x} cy={node.y} r="6.5" fill="#22c55e" />
+                      <circle
+                        cx={node.x}
+                        cy={node.y}
+                        r="6.5"
+                        fill="#ffffff"
+                        stroke="#16a34a"
+                        strokeWidth="2.25"
+                      />
                       <motion.circle
                         cx={node.x}
                         cy={node.y}
@@ -376,8 +444,8 @@ export default function Home() {
                   ))}
 
                   <motion.path
-                    d="M130 310 L218 270 L304 232 L392 192 L492 142"
-                    stroke="rgba(26,58,107,0.45)"
+                    d="M128 318 C 168 298, 188 288, 212 272 C 248 252, 272 242, 298 238 C 332 218, 358 208, 388 200 C 418 180, 458 162, 498 148"
+                    stroke="rgba(7,31,61,0.45)"
                     strokeWidth="1.2"
                     strokeDasharray="4 6"
                     fill="none"
@@ -387,12 +455,12 @@ export default function Home() {
                   />
 
                   <motion.circle
-                    cx="492"
-                    cy="142"
+                    cx="498"
+                    cy="148"
                     r="12"
-                    fill="rgba(255,222,158,0.9)"
+                    fill="url(#peakOrb)"
                     initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: [0, 1.4, 1], opacity: [0, 1, 0.85] }}
+                    animate={{ scale: [0, 1.4, 1], opacity: [0, 1, 0.92] }}
                     transition={{ duration: 0.6, delay: 4 }}
                   />
                 </svg>
@@ -420,10 +488,10 @@ export default function Home() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 4.0 }}
-              className="absolute left-1/2 top-[62%] w-full max-w-2xl -translate-x-1/2 px-6 text-center"
+              className="absolute left-1/2 top-[60%] w-full max-w-3xl -translate-x-1/2 px-6 text-center"
             >
               <motion.h1
-                className="text-4xl font-extrabold tracking-tight sm:text-5xl"
+                className="text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl"
                 initial="hidden"
                 animate="visible"
                 variants={{
@@ -438,15 +506,22 @@ export default function Home() {
                       hidden: { opacity: 0, y: 10 },
                       visible: { opacity: 1, y: 0 },
                     }}
-                    className="inline-block bg-gradient-to-r from-[#1a3a6b] to-[#f97316] bg-clip-text text-transparent"
+                    className={`inline-block ${idx < 6 ? "text-[#071f3d]" : "text-[#f97316]"}`}
                   >
                     {char}
                   </motion.span>
                 ))}
               </motion.h1>
-              <p className="mt-4 text-xl font-semibold text-emerald-600 sm:text-2xl">
+              <motion.div
+                aria-hidden
+                initial={{ opacity: 0, scaleX: 0 }}
+                animate={{ opacity: 1, scaleX: 1 }}
+                transition={{ delay: 4.35, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                className="mx-auto mt-3 h-[3px] max-w-[min(100%,15rem)] origin-center rounded-full bg-gradient-to-r from-[#071f3d] via-[#059669] to-[#f97316]"
+              />
+              <p className="mt-5 text-2xl font-bold text-emerald-600 sm:text-3xl md:text-4xl">
                 {typedTagline}
-                <span className="intro-cursor ml-1 inline-block h-6 w-[2px] bg-emerald-500 align-middle" />
+                <span className="intro-cursor ml-1.5 inline-block h-7 w-[3px] rounded-sm bg-emerald-500 align-middle sm:h-8 sm:w-[3px]" />
               </p>
             </motion.div>
 
@@ -455,10 +530,10 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0.3, 0.8, 0.3] }}
                 transition={{ duration: 1.8, repeat: Infinity }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center text-xs font-semibold uppercase tracking-[0.2em] text-[#1a3a6b]"
+                className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center text-xs font-semibold uppercase tracking-[0.2em] text-[#071f3d]"
               >
                 Tap anywhere to begin
-                <span className="mt-2 block text-[10px] font-medium normal-case tracking-[0.12em] text-[#1a3a6b]/55">
+                <span className="mt-2 block text-[10px] font-medium normal-case tracking-[0.12em] text-[#071f3d]/55">
                   or press Esc
                 </span>
               </motion.p>
@@ -475,12 +550,12 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <img src="/aglorify-logo.png" alt="Aglorify" className="h-10 w-10 rounded-xl object-cover" />
               <span className="text-2xl font-bold tracking-tight">
-                <span className="bg-gradient-to-r from-[#1a3a6b] to-[#f97316] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#071f3d] to-[#f97316] bg-clip-text text-transparent">
                   Aglorify
                 </span>
               </span>
             </div>
-            <div className="hidden items-center gap-8 text-sm font-semibold text-[#1a3a6b] md:flex">
+            <div className="hidden items-center gap-8 text-sm font-semibold text-[#071f3d] md:flex">
               <a href="#features" className="transition hover:text-[#f97316]">
                 Features
               </a>
@@ -533,7 +608,7 @@ export default function Home() {
             transition={{ duration: 0.7 }}
             className="mx-auto max-w-5xl py-24 text-center"
           >
-            <h1 className="text-balance text-4xl font-extrabold leading-tight text-[#1a3a6b] sm:text-5xl md:text-6xl">
+            <h1 className="text-balance text-4xl font-extrabold leading-tight text-[#071f3d] sm:text-5xl md:text-6xl">
               Turn Customer Feedback Into Growth
             </h1>
             <p className="mx-auto mt-6 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg">
@@ -543,7 +618,7 @@ export default function Home() {
               <button className="w-full rounded-2xl bg-gradient-to-r from-[#f97316] to-[#ea580c] px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-orange-200 transition hover:-translate-y-0.5 sm:w-auto">
                 Start Free Trial
               </button>
-              <button className="w-full rounded-2xl border-2 border-[#1a3a6b] px-6 py-3 text-sm font-semibold text-[#1a3a6b] transition hover:bg-[#1a3a6b] hover:text-white sm:w-auto">
+              <button className="w-full rounded-2xl border-2 border-[#071f3d] px-6 py-3 text-sm font-semibold text-[#071f3d] transition hover:bg-[#071f3d] hover:text-white sm:w-auto">
                 Watch Demo
               </button>
             </div>
@@ -559,7 +634,7 @@ export default function Home() {
             transition={{ duration: 0.65 }}
             className="mx-auto max-w-6xl"
           >
-            <h2 className="text-center text-3xl font-bold text-[#1a3a6b] sm:text-4xl">Features built to drive growth</h2>
+            <h2 className="text-center text-3xl font-bold text-[#071f3d] sm:text-4xl">Features built to drive growth</h2>
             <div className="mt-12 grid gap-6 md:grid-cols-3">
               {features.map((feature) => (
                 <article
@@ -567,7 +642,7 @@ export default function Home() {
                   className="rounded-2xl border border-orange-100 border-l-4 border-l-[#f97316] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-[0_15px_45px_rgba(249,115,22,0.18)]"
                 >
                   <span className="text-2xl text-[#f97316]">{feature.icon}</span>
-                  <h3 className="mt-3 text-xl font-semibold text-[#1a3a6b]">{feature.title}</h3>
+                  <h3 className="mt-3 text-xl font-semibold text-[#071f3d]">{feature.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-slate-600">{feature.description}</p>
                 </article>
               ))}
@@ -583,7 +658,7 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="mx-auto max-w-6xl"
           >
-            <p className="mb-8 text-center text-sm font-semibold uppercase tracking-[0.18em] text-[#1a3a6b]/80">
+            <p className="mb-8 text-center text-sm font-semibold uppercase tracking-[0.18em] text-[#071f3d]/80">
               Trusted by local businesses
             </p>
             <div className="marquee-mask">
@@ -591,7 +666,7 @@ export default function Home() {
                 {[...logos, ...logos].map((logo, idx) => (
                   <span
                     key={`${logo}-${idx}`}
-                    className="mx-3 inline-flex min-w-max items-center rounded-2xl border border-orange-200 bg-white px-5 py-2 text-sm font-semibold text-[#1a3a6b] shadow-sm"
+                    className="mx-3 inline-flex min-w-max items-center rounded-2xl border border-orange-200 bg-white px-5 py-2 text-sm font-semibold text-[#071f3d] shadow-sm"
                   >
                     {logo}
                   </span>
@@ -619,7 +694,7 @@ export default function Home() {
           </motion.div>
         </section>
 
-        <footer id="about" className="bg-[#1a3a6b] px-6 py-12 text-white sm:px-10">
+        <footer id="about" className="bg-[#071f3d] px-6 py-12 text-white sm:px-10">
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-sm sm:flex-row">
             <p>© 2026 Aglorify</p>
             <div className="flex gap-6 text-orange-300">
